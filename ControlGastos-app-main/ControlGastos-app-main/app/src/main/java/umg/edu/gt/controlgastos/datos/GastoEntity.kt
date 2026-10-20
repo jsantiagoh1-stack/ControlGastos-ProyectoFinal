@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "gastos")
 data class GastoEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Int = 0,
     val descripcion: String,
     val monto: Double,
     val categoria: String,
-    val fecha: Long
+    val fecha: String
 )

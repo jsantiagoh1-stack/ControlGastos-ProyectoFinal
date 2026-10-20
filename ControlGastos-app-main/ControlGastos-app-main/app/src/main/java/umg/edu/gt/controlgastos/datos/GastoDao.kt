@@ -1,3 +1,4 @@
+
 package umg.edu.gt.controlgastos.datos
 
 import androidx.room.Dao
@@ -13,8 +14,8 @@ interface GastoDao {
     @Query("SELECT * FROM gastos ORDER BY fecha DESC")
     suspend fun obtenerTodos(): List<GastoEntity>
 
-    @Query("SELECT * FROM gastos WHERE id = :id LIMIT 1")
-    suspend fun obtenerPorId(id: Long): GastoEntity?
+    @Query("SELECT * FROM gastos WHERE id = :id")
+    suspend fun obtenerPorId(id: Int): GastoEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(gasto: GastoEntity): Long
