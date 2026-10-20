@@ -1,19 +1,19 @@
+
 package umg.edu.gt.controlgastos
 
-import edu.umg.programacion2.gastos.datos.GastoRepositoryEnMemoria
 import edu.umg.programacion2.gastos.servicio.ControlGastos
+import umg.edu.gt.controlgastos.datos.GastoRepositoryRoom
 
-/**
- * Las piezas que TODA la app comparte.
- *
- * object = una clase de la que existe UN SOLO objeto. Kotlin lo crea la primera vez que
- * alguien escribe "Dependencias.control" y despues siempre devuelve ese mismo objeto.
- *
- * IMPORTANTE: por eso la lista y el formulario ven los MISMOS gastos. Si cada Activity
- * hiciera ControlGastos(GastoRepositoryEnMemoria()), cada una tendria su propia lista.
- *
- * En la semana 4 solo cambia esta linea: GastoRepositoryEnMemoria() -> GastoRepositoryRoom(...)
- */
 object Dependencias {
-    val control = ControlGastos(GastoRepositoryEnMemoria())
+
+    lateinit var control: ControlGastos
+        private set
+
+    fun inicializar(app: ControlGastosApp) {
+        val repositorio = GastoRepositoryRoom(
+            app.database.gastoDao()
+        )
+
+        control = ControlGastos(repositorio)
+    }
 }
