@@ -15,6 +15,8 @@ import umg.edu.gt.controlgastos.databinding.ActivityFormularioGastoBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 
 /**
  * Pantalla de formulario. Tiene DOS modos:
@@ -50,7 +52,12 @@ class FormularioGastoActivity : AppCompatActivity() {
         }
 
         binding.btnGuardar.setOnClickListener { guardar() }
+
+        binding.btnEliminar.setOnClickListener {
+            confirmarEliminacion()
+        }
     }
+
 
     /** Modo EDITAR: busca el gasto y llena los campos con sus datos. */
     private suspend fun cargarGasto(id: Int) {
@@ -61,6 +68,7 @@ class FormularioGastoActivity : AppCompatActivity() {
             return
         }
         gastoEditando = gasto
+        binding.btnEliminar.visibility = View.VISIBLE
 
         binding.tvTitulo.text = "Editar gasto"
         binding.btnGuardar.text = "Guardar cambios"
@@ -108,6 +116,40 @@ class FormularioGastoActivity : AppCompatActivity() {
             finish()
         }
     }
+
+
+    private fun confirmarEliminacion() {
+        val gasto = gastoEditando ?: return
+
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar gasto")
+            .setMessage(
+                "¿Estás seguro de que deseas eliminar este gasto?"
+            )
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Eliminar") { _, _ ->
+                lifecycleScope.launch {
+                    val eliminado = control.eliminar(gasto.id)
+
+                    if (eliminado) {
+                        Toast.makeText(
+                            this@FormularioGastoActivity,
+                            "Gasto eliminado",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        finish()
+                    } else {
+                        Toast.makeText(
+                            this@FormularioGastoActivity,
+                            "No se pudo eliminar el gasto",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+            .show()
+    }
+
 
     // Cuidado: java.time.LocalDate necesita API 26; con minSdk 24 usamos SimpleDateFormat.
     private fun fechaDeHoy(): String = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())

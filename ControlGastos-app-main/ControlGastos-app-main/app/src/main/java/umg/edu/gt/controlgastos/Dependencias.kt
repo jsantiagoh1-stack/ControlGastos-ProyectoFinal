@@ -1,4 +1,3 @@
-
 package umg.edu.gt.controlgastos
 
 import edu.umg.programacion2.gastos.servicio.ControlGastos
