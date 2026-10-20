@@ -1,0 +1,16 @@
+# Android Studio
+.gradle/
+.idea/
+.kotlin/
+*.iml
+local.properties
+
+# Archivos generados al compilar
+**/build/
+**/target/
+*.apk
+*.aab
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
