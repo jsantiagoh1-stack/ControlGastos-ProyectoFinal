@@ -1,164 +1,232 @@
+# Diagrama de clases — ControlGastos
 
+## 1. Arquitectura actual
 
-\# Diagrama de clases — ControlGastos
+Este diagrama representa las principales clases del proyecto ControlGastos, incluyendo la biblioteca independiente `gastos-core` y las clases Android utilizadas para almacenar información mediante SQLite y Room.
 
+La arquitectura mantiene separadas las responsabilidades de presentación, lógica de negocio y persistencia de datos.
 
-
-\## Arquitectura inicial
-
-
-
-Este diagrama representa las clases principales de la
-
-librería gastos-core antes de incorporar Room.
-
-
+## 2. Diagrama de clases
 
 ```mermaid
-
 classDiagram
+    class Gasto {
+        +Int id
+        +String descripcion
+        +Double monto
+        +Categoria categoria
+        +String fecha
+    }
 
-&#x20;   class Gasto {
+    class Categoria {
+        <<enumeration>>
+        ALIMENTACION
+        TRANSPORTE
+        ESTUDIOS
+        ENTRETENIMIENTO
+        SALUD
+        OTROS
+    }
 
-&#x20;       +Int id
+    class GastoRepository {
+        <<interface>>
+        +agregar(gasto) Gasto
+        +listar() List~Gasto~
+        +buscarPorId(id) Gasto
+        +actualizar(gasto) Boolean
+        +eliminar(id) Boolean
+    }
 
-&#x20;       +String descripcion
+    class GastoRepositoryEnMemoria {
+        -gastos
+        -siguienteId
+        +agregar(gasto) Gasto
+        +listar() List~Gasto~
+        +buscarPorId(id) Gasto
+        +actualizar(gasto) Boolean
+        +eliminar(id) Boolean
+    }
 
-&#x20;       +Double monto
+    class GastoRepositoryRoom {
+        -GastoDao dao
+        +agregar(gasto) Gasto
+        +listar() List~Gasto~
+        +buscarPorId(id) Gasto
+        +actualizar(gasto) Boolean
+        +eliminar(id) Boolean
+        -toEntity() GastoEntity
+        -toGasto() Gasto
+    }
 
-&#x20;       +Categoria categoria
+    class GastoEntity {
+        +Int id
+        +String descripcion
+        +Double monto
+        +String categoria
+        +String fecha
+    }
 
-&#x20;       +String fecha
+    class GastoDao {
+        <<interface>>
+        +obtenerTodos() List~GastoEntity~
+        +obtenerPorId(id) GastoEntity
+        +insertar(gasto) Long
+        +actualizar(gasto)
+        +eliminar(gasto)
+    }
 
-&#x20;   }
+    class AppDatabase {
+        <<RoomDatabase>>
+        +gastoDao() GastoDao
+    }
 
+    class ControlGastos {
+        -repositorio
+        +registrar(gasto)
+        +actualizar(gasto)
+        +listar()
+        +buscarPorId(id)
+        +eliminar(id)
+        +total()
+        +totalPorCategoria()
+        +resumen()
+    }
 
+    class ControlGastosApp {
+        +AppDatabase database
+        +onCreate()
+    }
 
-&#x20;   class Categoria {
+    class Dependencias {
+        +ControlGastos control
+        +inicializar(app)
+    }
 
-&#x20;       <<enumeration>>
+    class MainActivity {
+        +onCreate()
+        +onResume()
+    }
 
-&#x20;       ALIMENTACION
+    class FormularioGastoActivity {
+        +onCreate()
+    }
 
-&#x20;       TRANSPORTE
+    class GastoAdapter {
+        +onCreateViewHolder()
+        +onBindViewHolder()
+        +getItemCount()
+    }
 
-&#x20;       ESTUDIOS
+    Gasto --> Categoria : utiliza
+    GastoRepository ..> Gasto : administra
 
-&#x20;       ENTRETENIMIENTO
+    GastoRepositoryEnMemoria ..|> GastoRepository : implementa
+    GastoRepositoryRoom ..|> GastoRepository : implementa
 
-&#x20;       SALUD
+    ControlGastos --> GastoRepository : utiliza
 
-&#x20;       OTROS
+    GastoRepositoryRoom --> GastoDao : utiliza
+    GastoRepositoryRoom ..> GastoEntity : convierte
 
-&#x20;   }
+    GastoDao --> GastoEntity : consulta
+    AppDatabase --> GastoDao : proporciona
+    AppDatabase --> GastoEntity : registra
 
+    ControlGastosApp --> AppDatabase : inicializa
+    ControlGastosApp --> Dependencias : inicializa
 
+    Dependencias --> GastoRepositoryRoom : crea
+    Dependencias --> ControlGastos : comparte
 
-&#x20;   class GastoRepository {
-
-&#x20;       <<interface>>
-
-&#x20;       +agregar(gasto) Gasto
-
-&#x20;       +listar() List\~Gasto\~
-
-&#x20;       +buscarPorId(id) Gasto
-
-&#x20;       +actualizar(gasto) Boolean
-
-&#x20;       +eliminar(id) Boolean
-
-&#x20;   }
-
-
-
-&#x20;   class GastoRepositoryEnMemoria {
-
-&#x20;       -gastos
-
-&#x20;       -siguienteId
-
-&#x20;       +agregar(gasto) Gasto
-
-&#x20;       +listar() List\~Gasto\~
-
-&#x20;       +buscarPorId(id) Gasto
-
-&#x20;       +actualizar(gasto) Boolean
-
-&#x20;       +eliminar(id) Boolean
-
-&#x20;       -buscarPosicion(id) Int
-
-&#x20;   }
-
-
-
-&#x20;   class ControlGastos {
-
-&#x20;       -repositorio
-
-&#x20;       +validar(gasto) String
-
-&#x20;       +registrar(gasto) String
-
-&#x20;       +actualizar(gasto) String
-
-&#x20;       +listar() List\~Gasto\~
-
-&#x20;       +buscarPorId(id) Gasto
-
-&#x20;       +eliminar(id) Boolean
-
-&#x20;       +total() Double
-
-&#x20;       +totalPorCategoria() Map
-
-&#x20;       +resumen() String
-
-&#x20;   }
-
-
-
-&#x20;   Gasto --> Categoria : utiliza
-
-&#x20;   GastoRepository ..> Gasto : administra
-
-&#x20;   GastoRepositoryEnMemoria ..|> GastoRepository : implementa
-
-&#x20;   GastoRepositoryEnMemoria o-- Gasto : almacena
-
-&#x20;   ControlGastos --> GastoRepository : utiliza
-
+    MainActivity --> Dependencias : utiliza
+    FormularioGastoActivity --> Dependencias : utiliza
+    MainActivity --> GastoAdapter : utiliza
+    GastoAdapter ..> Gasto : muestra
 ```
 
+## 3. Explicación de las relaciones
 
+### Biblioteca gastos-core
 
-\## Explicación de las relaciones
+- `Gasto` representa la información de un gasto.
+- `Categoria` define las categorías disponibles.
+- `GastoRepository` establece el contrato para las operaciones CRUD.
+- `GastoRepositoryEnMemoria` implementa el contrato mediante almacenamiento temporal.
+- `ControlGastos` utiliza `GastoRepository` para acceder a los datos sin depender de una implementación específica.
 
+### Persistencia con Room
 
+- `GastoEntity` representa los registros de la tabla `gastos` de SQLite.
+- `GastoDao` define las operaciones de inserción, consulta, actualización y eliminación.
+- `AppDatabase` configura la base de datos y proporciona acceso al DAO.
+- `GastoRepositoryRoom` implementa `GastoRepository` y utiliza el DAO para almacenar y recuperar gastos.
+- `GastoRepositoryRoom` convierte los objetos `Gasto` y `GastoEntity` para comunicar la biblioteca con Room.
 
-\- ControlGastos utiliza la interfaz GastoRepository.
+### Aplicación Android
 
-\- GastoRepository define las operaciones CRUD.
+- `ControlGastosApp` inicializa los componentes generales al arrancar la aplicación.
+- `Dependencias` crea y comparte la instancia de `ControlGastos` utilizando el repositorio Room.
+- `MainActivity` presenta la lista de gastos.
+- `FormularioGastoActivity` permite registrar, modificar y eliminar gastos.
+- `GastoAdapter` muestra los registros mediante RecyclerView.
 
-\- GastoRepositoryEnMemoria implementa ese contrato.
+## 4. Flujo de almacenamiento
 
-\- Gasto representa la información de un gasto.
+Cuando el usuario registra un gasto, ocurre el siguiente proceso:
 
-\- Categoria define las categorías disponibles.
+1. El usuario introduce la información en `FormularioGastoActivity`.
+2. El formulario utiliza `Dependencias.control`.
+3. `ControlGastos` valida la información y utiliza el contrato `GastoRepository`.
+4. `GastoRepositoryRoom` recibe el gasto y lo convierte en `GastoEntity`.
+5. `GastoDao` inserta el registro mediante Room.
+6. SQLite almacena la información de forma persistente.
+7. Al consultar los gastos, el repositorio convierte las entidades en objetos `Gasto`.
+8. `MainActivity` recibe los datos y los presenta mediante `GastoAdapter`.
 
+## 5. Decisiones de diseño
 
+### Separación de responsabilidades
 
-\## Decisión de diseño
+El proyecto mantiene separados los componentes Android, la lógica de negocio y el almacenamiento.
 
+Esto permite modificar la interfaz o el repositorio sin reescribir completamente la aplicación.
 
+### Patrón Repository
 
-La separación entre el servicio y el repositorio permite
+El contrato `GastoRepository` permite utilizar distintas implementaciones de almacenamiento.
 
-reemplazar el almacenamiento temporal por Room sin
+Inicialmente se utilizó `GastoRepositoryEnMemoria`. Posteriormente fue sustituido por `GastoRepositoryRoom` para agregar persistencia.
 
-reescribir la lógica principal del sistema.
+### Persistencia
 
+SQLite permite almacenar la información localmente y Room facilita las operaciones sobre la base de datos.
 
+Los gastos permanecen registrados después de cerrar y volver a abrir la aplicación.
+
+### Compatibilidad con gastos-core
+
+La biblioteca `gastos-core` conserva su independencia de Android y Room.
+
+Las clases de persistencia pertenecen exclusivamente al proyecto Android.
+
+## 6. Funcionalidades futuras
+
+La arquitectura continuará evolucionando para incorporar:
+
+1. Registro y administración de ingresos.
+2. Cálculo del saldo disponible.
+3. Movimientos en quetzales y dólares.
+4. Conversión monetaria mediante tipo de cambio manual.
+5. Almacenamiento del tipo de cambio histórico de cada movimiento.
+6. Estadísticas y resúmenes financieros.
+
+Los nuevos modelos, repositorios y entidades se incorporarán cuando se implementen esas funcionalidades. No se representan como clases existentes porque todavía no forman parte del código actual.
+
+## 7. Conclusión
+
+La arquitectura actual de ControlGastos demuestra cómo una aplicación Android puede utilizar una biblioteca Kotlin independiente y almacenar información mediante SQLite y Room.
+
+La implementación de `GastoRepositoryRoom` permitió incorporar persistencia sin modificar el contrato original del repositorio.
+
+Esta organización proporciona una base para continuar desarrollando funciones financieras más completas.
 
