@@ -120,3 +120,47 @@ Las funcionalidades adicionales se implementarán progresivamente y se documenta
 
 Proyecto final de Programación II, orientado a demostrar conocimientos de programación orientada a objetos, manejo de datos, persistencia, interfaces móviles y control de versiones.
 
+
+## Estado actual del proyecto
+
+**Última actualización:** 20 de octubre de 2026.
+
+ControlGastos es una aplicación Android desarrollada en Kotlin como proyecto académico de Programación 2 de la Universidad Mariano Gálvez de Guatemala.
+
+### Funcionalidades implementadas
+
+- Registro de gastos con descripción, monto, categoría y fecha.
+- Visualización de los gastos registrados.
+- Edición de gastos existentes.
+- Eliminación de gastos con confirmación.
+- Almacenamiento persistente mediante SQLite y Room.
+- Conservación de los registros al cerrar y volver a abrir la aplicación.
+- Integración con la biblioteca Kotlin `gastos-core` versión 1.1.0.
+
+### Tecnologías utilizadas
+
+- Kotlin.
+- Android Studio.
+- SQLite.
+- Room.
+- KSP.
+- Gradle.
+- Git y GitHub.
+
+### Funcionalidades pendientes
+
+Las siguientes mejoras forman parte de la evolución prevista de ControlGastos:
+
+1. Registro y administración de ingresos.
+2. Cálculo del saldo disponible.
+3. Registro de movimientos en quetzales (GTQ) y dólares estadounidenses (USD).
+4. Conversión de monedas mediante un tipo de cambio manual.
+5. Almacenamiento del tipo de cambio utilizado en cada movimiento.
+6. Resúmenes financieros y estadísticas por categoría.
+7. Mejoras en el diseño y la experiencia de usuario.
+
+### Próxima etapa de desarrollo
+
+El siguiente incremento estará enfocado en implementar el registro de ingresos y el cálculo del saldo disponible, manteniendo la persistencia de datos mediante SQLite y Room.
+
+Posteriormente se incorporará el manejo de quetzales y dólares, procurando conservar los datos registrados durante las actualizaciones de la base de datos.
