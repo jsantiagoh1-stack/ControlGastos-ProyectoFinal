@@ -1,4 +1,3 @@
-
 package umg.edu.gt.controlgastos.datos
 
 import androidx.room.Dao
