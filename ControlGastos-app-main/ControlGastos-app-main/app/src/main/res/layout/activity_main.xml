@@ -27,6 +27,13 @@
         android:layout_marginTop="8dp"
         android:text="+ Nuevo gasto" />
 
+    <Button
+        android:id="@+id/btnNuevoIngreso"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="+ Nuevo ingreso" />
+
     <!-- height 0dp + weight 1 = "ocupa todo el alto que sobre" (la lista hace scroll ahi). -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGastos"

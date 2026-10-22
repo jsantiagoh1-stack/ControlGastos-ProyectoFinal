@@ -26,6 +26,10 @@
         <activity
             android:name=".FormularioGastoActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".FormularioIngresoActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
