@@ -54,10 +54,34 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch { cargarGastos() }
     }
 
+
     private suspend fun cargarGastos() {
-        adapter.mostrar(control.listar())
-        binding.tvResumen.text = control.resumen()   // "3 gastos · Total: Q 245.00"
+
+        // Consultar los gastos existentes
+        val gastos = control.listar()
+        adapter.mostrar(gastos)
+
+        // Mantener el resumen original
+        binding.tvResumen.text = control.resumen()
+
+        // Calcular los totales reales desde SQLite
+        val totalGastos = gastos.sumOf { it.monto }
+        val totalIngresos = Dependencias.ingresos.totalIngresos()
+
+        // Calcular el saldo disponible
+        val saldo = totalIngresos - totalGastos
+
+        // Mostrar los resultados
+        binding.tvTotalIngresos.text =
+            "Ingresos: Q %.2f".format(totalIngresos)
+
+        binding.tvTotalGastos.text =
+            "Gastos: Q %.2f".format(totalGastos)
+
+        binding.tvSaldoDisponible.text =
+            "Saldo disponible: Q %.2f".format(saldo)
     }
+
 
     /** id == null -> crear un gasto nuevo. id con valor -> editar ese gasto. */
     private fun abrirFormulario(id: Int?) {
