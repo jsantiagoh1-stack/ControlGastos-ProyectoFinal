@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: GastoAdapter
 
+    private lateinit var ingresoAdapter: IngresoAdapter
+
     // IMPORTANTE: ya NO se crea aqui; se usa el compartido (ver Dependencias.kt).
     private val control = Dependencias.control
 
@@ -33,6 +35,15 @@ class MainActivity : AppCompatActivity() {
         // 3. Conectar la lista. Cuidado: sin LayoutManager la lista queda en blanco y sin error.
         binding.rvGastos.layoutManager = LinearLayoutManager(this)
         binding.rvGastos.adapter = adapter
+
+        ingresoAdapter = IngresoAdapter { ingreso ->
+            val intent = Intent(this, FormularioIngresoActivity::class.java)
+            intent.putExtra("id_ingreso", ingreso.id)
+            startActivity(intent)
+        }
+
+        binding.rvIngresos.layoutManager = LinearLayoutManager(this)
+        binding.rvIngresos.adapter = ingresoAdapter
 
         // 4. El boton "+" abre el formulario vacio (sin id).
         binding.btnNuevo.setOnClickListener { abrirFormulario(null) }
@@ -67,6 +78,9 @@ class MainActivity : AppCompatActivity() {
         // Calcular los totales reales desde SQLite
         val totalGastos = gastos.sumOf { it.monto }
         val totalIngresos = Dependencias.ingresos.totalIngresos()
+
+        val listaIngresos = Dependencias.ingresos.listar()
+        ingresoAdapter.mostrar(listaIngresos)
 
         // Calcular el saldo disponible
         val saldo = totalIngresos - totalGastos
