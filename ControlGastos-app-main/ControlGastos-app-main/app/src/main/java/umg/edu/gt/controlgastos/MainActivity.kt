@@ -36,6 +36,15 @@ class MainActivity : AppCompatActivity() {
 
         // 4. El boton "+" abre el formulario vacio (sin id).
         binding.btnNuevo.setOnClickListener { abrirFormulario(null) }
+
+        // 5. El botón "Nuevo ingreso" abre el formulario de ingresos.
+        binding.btnNuevoIngreso.setOnClickListener {
+            val intent = Intent(
+                this,
+                FormularioIngresoActivity::class.java
+            )
+            startActivity(intent)
+        }
     }
 
     // IMPORTANTE: onResume se ejecuta al abrir la pantalla Y cada vez que regresamos del
