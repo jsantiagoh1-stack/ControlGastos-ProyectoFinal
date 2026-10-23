@@ -123,11 +123,17 @@ Proyecto final de Programación II, orientado a demostrar conocimientos de progr
 
 ## Estado actual del proyecto
 
-**Última actualización:** 20 de octubre de 2026.
+**Última actualización:** 22 de octubre de 2026.
 
-ControlGastos es una aplicación Android desarrollada en Kotlin como proyecto académico de Programación 2 de la Universidad Mariano Gálvez de Guatemala.
+ControlGastos es una aplicación Android desarrollada en Kotlin como proyecto académico de Programación II de la Universidad Mariano Gálvez de Guatemala.
 
-### Funcionalidades implementadas
+Actualmente se han implementado la persistencia de gastos mediante Room y SQLite, así como la administración de ingresos y el cálculo del saldo disponible.
+
+### Incremento 4: persistencia de gastos con Room y SQLite
+
+**Estado: completado y probado.**
+
+Funcionalidades implementadas:
 
 - Registro de gastos con descripción, monto, categoría y fecha.
 - Visualización de los gastos registrados.
@@ -137,30 +143,70 @@ ControlGastos es una aplicación Android desarrollada en Kotlin como proyecto ac
 - Conservación de los registros al cerrar y volver a abrir la aplicación.
 - Integración con la biblioteca Kotlin `gastos-core` versión 1.1.0.
 
+### Incremento 5: administración de ingresos y saldo disponible
+
+**Estado: implementado y probado.**
+
+Funcionalidades desarrolladas:
+
+- Registro de ingresos con descripción, monto y fecha.
+- Validación de los datos ingresados.
+- Almacenamiento de ingresos mediante SQLite y Room.
+- Historial de ingresos registrados.
+- Edición de ingresos existentes.
+- Eliminación de ingresos con ventana de confirmación.
+- Actualización de los totales después de registrar, editar o eliminar movimientos.
+- Cálculo automático del saldo disponible mediante la diferencia entre ingresos y gastos.
+- Conservación de los registros después de cerrar y volver a abrir la aplicación.
+
+**Fórmula utilizada:**
+
+Saldo disponible = Total de ingresos − Total de gastos.
+
+### Pruebas realizadas del Incremento 5
+
+Las pruebas se realizaron en un dispositivo Samsung SM-A165M.
+
+Se verificó el funcionamiento del registro, la consulta, la edición y la eliminación de ingresos, así como el cálculo del saldo disponible.
+
+Durante la prueba final se obtuvieron los siguientes resultados:
+
+| Concepto | Resultado |
+|---|---:|
+| Ingresos registrados | 2 |
+| Total de ingresos | Q 5,000.00 |
+| Gastos registrados | 10 |
+| Total de gastos | Q 1,405.00 |
+| Saldo disponible | Q 3,595.00 |
+
+Se comprobó que, al cerrar y volver a abrir la aplicación, los ingresos y gastos permanecieron almacenados y los totales se conservaron correctamente.
+
 ### Tecnologías utilizadas
 
 - Kotlin.
 - Android Studio.
+- XML y ViewBinding.
 - SQLite.
 - Room.
 - KSP.
 - Gradle.
+- Corrutinas de Kotlin.
 - Git y GitHub.
 
 ### Funcionalidades pendientes
 
-Las siguientes mejoras forman parte de la evolución prevista de ControlGastos:
+Las siguientes mejoras forman parte de las próximas etapas de ControlGastos:
 
-1. Registro y administración de ingresos.
-2. Cálculo del saldo disponible.
-3. Registro de movimientos en quetzales (GTQ) y dólares estadounidenses (USD).
-4. Conversión de monedas mediante un tipo de cambio manual.
-5. Almacenamiento del tipo de cambio utilizado en cada movimiento.
-6. Resúmenes financieros y estadísticas por categoría.
-7. Mejoras en el diseño y la experiencia de usuario.
+1. Registro de movimientos en quetzales (GTQ) y dólares estadounidenses (USD).
+2. Conversión de monedas mediante un tipo de cambio manual.
+3. Conservación del tipo de cambio aplicado a cada movimiento.
+4. Estadísticas financieras y resúmenes por categoría.
+5. Mejoras en el diseño y la experiencia de usuario.
 
 ### Próxima etapa de desarrollo
 
-El siguiente incremento estará enfocado en implementar el registro de ingresos y el cálculo del saldo disponible, manteniendo la persistencia de datos mediante SQLite y Room.
+El siguiente incremento estará orientado al manejo de quetzales y dólares estadounidenses.
 
-Posteriormente se incorporará el manejo de quetzales y dólares, procurando conservar los datos registrados durante las actualizaciones de la base de datos.
+Se implementará la conversión de monedas utilizando un tipo de cambio ingresado manualmente y se buscará conservar el valor aplicado a cada movimiento.
+
+Las próximas modificaciones deberán mantener la compatibilidad con la base de datos existente para evitar la pérdida de gastos e ingresos registrados.

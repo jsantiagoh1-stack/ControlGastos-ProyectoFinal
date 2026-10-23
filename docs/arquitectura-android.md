@@ -266,3 +266,113 @@ La implementación de Room y SQLite permitió sustituir el almacenamiento tempor
 Actualmente, la aplicación permite registrar, consultar, editar y eliminar gastos que permanecen almacenados al cerrar y volver a abrir la aplicación.
 
 La próxima etapa de desarrollo consistirá en implementar ingresos y saldo disponible. Posteriormente, se incorporarán quetzales y dólares, conversiones monetarias y estadísticas financieras.
+
+## Incremento 5: administración de ingresos y saldo disponible
+
+### 1. Objetivo
+
+Ampliar ControlGastos para permitir la administración de ingresos personales y calcular el saldo disponible, conservando la persistencia de datos mediante SQLite y Room.
+
+Esta funcionalidad se incorpora sin modificar las reglas de negocio existentes de la librería `gastos-core`.
+
+### 2. Componentes implementados
+
+**IngresoEntity.kt**
+
+Representa un ingreso almacenado en la base de datos mediante Room.
+
+Contiene los siguientes atributos:
+
+- `id`: identificador del ingreso.
+- `descripcion`: concepto del ingreso.
+- `monto`: cantidad recibida.
+- `fecha`: fecha correspondiente al movimiento.
+
+**IngresoDao.kt**
+
+Define las operaciones necesarias para acceder a los ingresos almacenados en SQLite:
+
+- Consultar todos los ingresos.
+- Buscar un ingreso por su identificador.
+- Insertar ingresos.
+- Actualizar ingresos.
+- Eliminar ingresos.
+
+**IngresoRepositoryRoom.kt**
+
+Permite acceder a las operaciones del DAO desde las actividades Android, separando el acceso a datos de la interfaz de usuario.
+
+**AppDatabase.kt**
+
+Se amplió para incluir `IngresoEntity` y proporcionar acceso a `IngresoDao`.
+
+La base de datos pasó a la versión 2, incorporando una nueva tabla para almacenar ingresos.
+
+**Migraciones.kt**
+
+Contiene la migración `MIGRATION_1_2`, que permite incorporar la tabla de ingresos a una base de datos existente sin eliminar la tabla de gastos.
+
+**ControlGastosApp.kt**
+
+Configura la instancia de Room y registra la migración de la versión 1 a la versión 2.
+
+**Dependencias.kt**
+
+Centraliza el acceso compartido a los repositorios de gastos e ingresos.
+
+### 3. Componentes de interfaz
+
+**FormularioIngresoActivity.kt**
+
+Permite registrar, consultar, editar y eliminar ingresos.
+
+Incluye validaciones para la descripción, el monto y la fecha, además de una ventana de confirmación antes de eliminar un registro.
+
+**IngresoAdapter.kt**
+
+Conecta los ingresos almacenados con la lista visual de Android y permite seleccionar un movimiento existente para editarlo.
+
+**MainActivity.kt**
+
+Además de mostrar los gastos, ahora presenta:
+
+- Total de ingresos.
+- Total de gastos.
+- Saldo disponible.
+- Historial de ingresos.
+- Botón para registrar nuevos ingresos.
+
+**Archivos XML**
+
+- `activity_formulario_ingreso.xml`: formulario de ingresos.
+- `item_ingreso.xml`: representación visual de cada ingreso.
+- `activity_main.xml`: pantalla principal con resumen financiero e historiales.
+
+### 4. Cálculo del saldo disponible
+
+La aplicación utiliza la siguiente operación:
+
+**Saldo disponible = Total de ingresos − Total de gastos**
+
+Los ingresos se obtienen mediante el repositorio de ingresos y los gastos mediante la lógica existente de `ControlGastos`.
+
+Al regresar a la pantalla principal, los totales se consultan nuevamente para reflejar los movimientos registrados, modificados o eliminados.
+
+### 5. Persistencia y conservación de datos
+
+Los ingresos y gastos se almacenan mediante Room sobre SQLite.
+
+La migración de la base de datos permite añadir la funcionalidad de ingresos sin eliminar los gastos registrados previamente.
+
+Se comprobó la conservación de los movimientos después de cerrar y volver a abrir la aplicación en un Samsung SM-A165M.
+
+### 6. Próximas mejoras
+
+Las siguientes etapas contemplan:
+
+1. Registro de movimientos en quetzales y dólares.
+2. Conversión de monedas mediante tipos de cambio manuales.
+3. Conservación del tipo de cambio utilizado en cada movimiento.
+4. Estadísticas financieras y mejoras visuales.
+
+La evolución de la base de datos deberá realizarse mediante migraciones para conservar los registros existentes.

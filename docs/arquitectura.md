@@ -203,3 +203,39 @@ La arquitectura actual de ControlGastos mantiene separadas la lógica de negocio
 Gracias al contrato `GastoRepository`, fue posible sustituir el almacenamiento temporal por SQLite y Room sin reescribir la lógica principal de la biblioteca.
 
 Esta estructura proporciona una base para continuar desarrollando funcionalidades de administración de ingresos, saldo disponible, conversión de monedas y estadísticas financieras.
+
+## 9. Incremento 5: administración de ingresos
+
+El Incremento 5 amplió las funcionalidades de ControlGastos para administrar tanto gastos como ingresos personales.
+
+Se incorporaron las clases `IngresoEntity`, `IngresoDao` e `IngresoRepositoryRoom` para gestionar ingresos mediante SQLite y Room.
+
+También se desarrollaron `FormularioIngresoActivity` e `IngresoAdapter` para permitir el registro, consulta, edición y eliminación de ingresos desde la aplicación Android.
+
+### Actualización de la base de datos
+
+La base de datos pasó de la versión 1 a la versión 2.
+
+Se implementó `MIGRATION_1_2`, que crea la tabla `ingresos` sin eliminar los gastos almacenados anteriormente.
+
+Esta migración permitió ampliar la estructura de almacenamiento manteniendo los registros existentes.
+
+### Cálculo del saldo disponible
+
+La aplicación calcula el saldo mediante la siguiente fórmula:
+
+**Saldo disponible = Total de ingresos − Total de gastos**
+
+Los valores se obtienen de los repositorios correspondientes y se actualizan al regresar a la pantalla principal.
+
+### Pruebas realizadas
+
+Se verificó el funcionamiento de las operaciones CRUD de ingresos y la actualización del saldo en un Samsung SM-A165M.
+
+También se comprobó que los ingresos permanecen almacenados después de cerrar y volver a abrir la aplicación.
+
+### Estado actual
+
+Con este incremento, ControlGastos dispone de administración de gastos e ingresos, persistencia mediante SQLite y Room, y cálculo del saldo disponible.
+
+Las próximas mejoras contemplan el uso de quetzales y dólares, tipos de cambio manuales y estadísticas financieras.
