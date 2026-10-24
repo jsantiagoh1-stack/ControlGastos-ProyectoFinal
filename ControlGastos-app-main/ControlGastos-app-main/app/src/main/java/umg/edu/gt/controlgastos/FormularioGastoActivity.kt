@@ -17,6 +17,9 @@ import java.util.Date
 import java.util.Locale
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import android.widget.AdapterView
+import android.text.Editable
+import android.text.TextWatcher
 
 /**
  * Pantalla de formulario. Tiene DOS modos:
@@ -44,6 +47,70 @@ class FormularioGastoActivity : AppCompatActivity() {
         binding.spCategoria.adapter = ArrayAdapter(
             this, android.R.layout.simple_spinner_dropdown_item, Categoria.entries
         )
+
+        // Configurar las monedas disponibles
+        val monedas = listOf("GTQ", "USD")
+
+        binding.spMoneda.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            monedas
+        )
+
+        // Mostrar el tipo de cambio solamente para dólares
+        binding.spMoneda.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val moneda = monedas[position]
+
+                    if (moneda == "USD") {
+                        binding.contenedorTipoCambio.visibility = View.VISIBLE
+                    } else {
+                        binding.contenedorTipoCambio.visibility = View.GONE
+                    }
+
+                    actualizarEquivalente()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    binding.contenedorTipoCambio.visibility = View.GONE
+                }
+            }
+
+
+        // Actualizar la conversión al escribir el monto o tipo de cambio
+        val observador = object : TextWatcher {
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                actualizarEquivalente()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        }
+
+        binding.etMonto.addTextChangedListener(observador)
+        binding.etTipoCambio.addTextChangedListener(observador)
+
 
         // 3. ¿Nos enviaron un id? 0 = no vino nada -> modo CREAR.
         val id = intent.getIntExtra(EXTRA_ID_GASTO, 0)
@@ -77,43 +144,128 @@ class FormularioGastoActivity : AppCompatActivity() {
         binding.etMonto.setText(gasto.monto.toString())
         // ordinal = posicion en el enum = posicion en el Spinner (lo llenamos con Categoria.entries).
         binding.spCategoria.setSelection(gasto.categoria.ordinal)
+
+        val datosMoneda = Dependencias.gastos.obtenerMonedaYTipoCambio(id)
+
+        if (datosMoneda != null) {
+            val moneda = datosMoneda.first
+            val tipoCambio = datosMoneda.second
+
+            binding.spMoneda.setSelection(
+                if (moneda == "USD") 1 else 0
+            )
+
+            binding.etTipoCambio.setText(
+                if (moneda == "USD") tipoCambio.toString() else ""
+            )
+        }
     }
 
+
     private fun guardar() {
-        // 1. Leer y revisar el monto (igual que en el Incremento 2).
-        val monto = binding.etMonto.text.toString().toDoubleOrNull()
-        if (monto == null) {
+
+        val descripcion = binding.etDescripcion.text.toString().trim()
+        val monto = binding.etMonto.text.toString().trim().toDoubleOrNull()
+        val categoria = binding.spCategoria.selectedItem as Categoria
+
+        val moneda = binding.spMoneda.selectedItem?.toString() ?: "GTQ"
+
+        if (descripcion.isBlank()) {
+            binding.etDescripcion.error = "Ingresa una descripción"
+            return
+        }
+
+        if (monto == null || !monto.isFinite() || monto <= 0.0) {
             binding.etMonto.error = "Ingresa un monto válido"
             return
         }
-        val descripcion = binding.etDescripcion.text.toString().trim()
-        val categoria = binding.spCategoria.selectedItem as Categoria
 
-        // 2. Copiamos la propiedad a una variable local: dentro del if Kotlin ya sabe que no es null.
+        val tipoCambio = if (moneda == "USD") {
+            binding.etTipoCambio.text.toString().trim().toDoubleOrNull()
+        } else {
+            1.0
+        }
+
+        if (tipoCambio == null ||
+            !tipoCambio.isFinite() ||
+            tipoCambio <= 0.0
+        ) {
+            binding.etTipoCambio.error = "Ingresa un tipo de cambio válido"
+            return
+        }
+
+        if (!(monto * tipoCambio).isFinite()) {
+            binding.etMonto.error = "El equivalente es demasiado grande"
+            return
+        }
+
         val original = gastoEditando
 
+        val gasto = if (original == null) {
+            Gasto(
+                descripcion = descripcion,
+                monto = monto,
+                categoria = categoria,
+                fecha = fechaDeHoy()
+            )
+        } else {
+            original.copy(
+                descripcion = descripcion,
+                monto = monto,
+                categoria = categoria
+            )
+        }
+
+        binding.btnGuardar.isEnabled = false
+
         lifecycleScope.launch {
-            // 3. if devuelve un valor: el mensaje de error (o null) de registrar o de actualizar.
-            val error = if (original == null) {
-                control.registrar(
-                    Gasto(descripcion = descripcion, monto = monto, categoria = categoria, fecha = fechaDeHoy())
-                )
-            } else {
-                // copy() conserva el id y la fecha originales; solo cambia lo editado.
-                control.actualizar(
-                    original.copy(descripcion = descripcion, monto = monto, categoria = categoria)
-                )
-            }
+            try {
+                if (original == null) {
 
-            if (error != null) {
-                Toast.makeText(this@FormularioGastoActivity, error, Toast.LENGTH_SHORT).show()
-                return@launch
-            }
+                    Dependencias.gastos.agregarConMoneda(
+                        gasto = gasto,
+                        moneda = moneda,
+                        tipoCambio = tipoCambio
+                    )
 
-            // 4. Todo bien: cerramos esta pantalla y Android muestra otra vez la lista.
-            // IMPORTANTE: NO se abre MainActivity con startActivity (apilaria una segunda lista).
-            Toast.makeText(this@FormularioGastoActivity, "Gasto guardado", Toast.LENGTH_SHORT).show()
-            finish()
+                } else {
+
+                    val actualizado = Dependencias.gastos.actualizarConMoneda(
+                        gasto = gasto,
+                        moneda = moneda,
+                        tipoCambio = tipoCambio
+                    )
+
+                    if (!actualizado) {
+                        Toast.makeText(
+                            this@FormularioGastoActivity,
+                            "No se encontró el gasto",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        binding.btnGuardar.isEnabled = true
+                        return@launch
+                    }
+                }
+
+                Toast.makeText(
+                    this@FormularioGastoActivity,
+                    "Gasto guardado correctamente",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                finish()
+
+            } catch (e: Exception) {
+
+                binding.btnGuardar.isEnabled = true
+
+                Toast.makeText(
+                    this@FormularioGastoActivity,
+                    "No se pudo guardar el gasto",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
@@ -148,6 +300,39 @@ class FormularioGastoActivity : AppCompatActivity() {
                 }
             }
             .show()
+    }
+
+    private fun actualizarEquivalente() {
+        val moneda = binding.spMoneda.selectedItem?.toString() ?: "GTQ"
+
+        if (moneda != "USD") {
+            binding.tvEquivalente.text = "Equivalente: Q 0.00"
+            return
+        }
+
+        val monto = binding.etMonto.text.toString().toDoubleOrNull()
+        val tipoCambio = binding.etTipoCambio.text.toString().toDoubleOrNull()
+
+        if (monto == null || tipoCambio == null ||
+            !monto.isFinite() || !tipoCambio.isFinite() ||
+            monto <= 0.0 || tipoCambio <= 0.0
+        ) {
+            binding.tvEquivalente.text = "Ingresa un monto y tipo de cambio válidos"
+            return
+        }
+
+        val equivalente = monto * tipoCambio
+
+        binding.tvEquivalente.text =
+            if (equivalente.isFinite()) {
+                String.format(
+                    Locale.US,
+                    "Equivalente: Q %.2f",
+                    equivalente
+                )
+            } else {
+                "El equivalente es demasiado grande"
+            }
     }
 
 

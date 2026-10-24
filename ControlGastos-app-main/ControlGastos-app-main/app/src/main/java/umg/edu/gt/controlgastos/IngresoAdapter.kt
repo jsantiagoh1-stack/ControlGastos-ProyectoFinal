@@ -44,14 +44,36 @@ class IngresoAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun mostrar(ingreso: IngresoEntity) {
-            binding.txtDescripcionIngreso.text = ingreso.descripcion
-            binding.txtFechaIngreso.text = ingreso.fecha
 
-            binding.txtMontoIngreso.text = String.format(
-                Locale.US,
-                "Q %.2f",
-                ingreso.monto
-            )
+            binding.txtDescripcionIngreso.text = ingreso.descripcion
+
+            if (ingreso.moneda == "USD") {
+
+                val equivalente = ingreso.monto * ingreso.tipoCambio
+
+                binding.txtMontoIngreso.text = String.format(
+                    Locale.US,
+                    "US$ %.2f",
+                    ingreso.monto
+                )
+
+                binding.txtFechaIngreso.text = String.format(
+                    Locale.US,
+                    "%s · Equivalente: Q %.2f",
+                    ingreso.fecha,
+                    equivalente
+                )
+
+            } else {
+
+                binding.txtMontoIngreso.text = String.format(
+                    Locale.US,
+                    "Q %.2f",
+                    ingreso.monto
+                )
+
+                binding.txtFechaIngreso.text = ingreso.fecha
+            }
 
             binding.root.setOnClickListener {
                 alSeleccionar(ingreso)

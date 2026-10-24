@@ -68,24 +68,23 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun cargarGastos() {
 
-        // Consultar los gastos existentes
+
         val gastos = control.listar()
-        adapter.mostrar(gastos)
+        val monedasPorGasto = Dependencias.gastos.obtenerMonedasPorGasto()
+        adapter.mostrar(gastos, monedasPorGasto)
 
-        // Mantener el resumen original
-        binding.tvResumen.text = control.resumen()
+        val totalGastos = Dependencias.gastos.totalGastosEnQuetzales()
 
-        // Calcular los totales reales desde SQLite
-        val totalGastos = gastos.sumOf { it.monto }
+        binding.tvResumen.text =
+            "${gastos.size} gastos · Total: Q %.2f".format(totalGastos)
+
         val totalIngresos = Dependencias.ingresos.totalIngresos()
 
         val listaIngresos = Dependencias.ingresos.listar()
         ingresoAdapter.mostrar(listaIngresos)
 
-        // Calcular el saldo disponible
         val saldo = totalIngresos - totalGastos
 
-        // Mostrar los resultados
         binding.tvTotalIngresos.text =
             "Ingresos: Q %.2f".format(totalIngresos)
 

@@ -20,6 +20,7 @@ class GastoAdapter(
 
     // Los datos que se muestran. Empieza vacia; la Activity la llena con mostrar(...).
     private var gastos: List<Gasto> = emptyList()
+    private var monedasPorGasto: Map<Int, Pair<String, Double>> = emptyMap()
 
     /** Guarda las vistas de UNA fila para poder reutilizarla (reciclarla). */
     class GastoViewHolder(val binding: ItemGastoBinding) : RecyclerView.ViewHolder(binding.root)
@@ -39,14 +40,40 @@ class GastoAdapter(
         val gasto = gastos[position]
         holder.binding.tvDescripcion.text = gasto.descripcion
         holder.binding.tvDetalle.text = "${gasto.categoria} · ${gasto.fecha}"
-        holder.binding.tvMonto.text = formatearQuetzales(gasto.monto)
-        holder.binding.root.setOnClickListener { alTocarGasto(gasto) }
+
+        val datosMoneda = monedasPorGasto[gasto.id]
+        val moneda = datosMoneda?.first ?: "GTQ"
+        val tipoCambio = datosMoneda?.second ?: 1.0
+
+        if (moneda == "USD") {
+            holder.binding.tvMonto.text =
+                String.format(java.util.Locale.US, "US$ %.2f", gasto.monto)
+
+            holder.binding.tvDetalle.text =
+                String.format(
+                    java.util.Locale.US,
+                    "%s · %s · Q %.2f",
+                    gasto.categoria,
+                    gasto.fecha,
+                    gasto.monto * tipoCambio
+                )
+        } else {
+            holder.binding.tvMonto.text = formatearQuetzales(gasto.monto)
+            holder.binding.tvDetalle.text =
+                "${gasto.categoria} · ${gasto.fecha}"
+        }
+        holder.binding.root.setOnClickListener {
+            alTocarGasto(gasto) }
     }
 
     /** Reemplaza los datos y le pide a RecyclerView que redibuje la lista. */
-    @SuppressLint("NotifyDataSetChanged") // forma simple; la mejorada es ListAdapter + DiffUtil
-    fun mostrar(nuevos: List<Gasto>) {
+    @SuppressLint("NotifyDataSetChanged")
+    fun mostrar(
+        nuevos: List<Gasto>,
+        monedas: Map<Int, Pair<String, Double>> = emptyMap()
+    ) {
         gastos = nuevos
+        monedasPorGasto = monedas
         notifyDataSetChanged()
     }
 }

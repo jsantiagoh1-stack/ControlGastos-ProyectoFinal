@@ -14,6 +14,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.widget.TextView
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import androidx.core.widget.doAfterTextChanged
 
 class FormularioIngresoActivity : AppCompatActivity() {
 
@@ -44,6 +48,94 @@ class FormularioIngresoActivity : AppCompatActivity() {
         val eliminar = findViewById<Button>(
             R.id.btnEliminarIngreso
         )
+
+        val selectorMoneda = findViewById<Spinner>(
+            R.id.spMonedaIngreso
+        )
+
+        val contenedorTipoCambio = findViewById<View>(
+            R.id.contenedorTipoCambioIngreso
+        )
+
+        val tipoCambio = findViewById<EditText>(
+            R.id.etTipoCambioIngreso
+        )
+
+        val equivalente = findViewById<TextView>(
+            R.id.tvEquivalenteIngreso
+        )
+
+        val actualizarEquivalente: () -> Unit = {
+            val monedaSeleccionada =
+                selectorMoneda.selectedItem?.toString() ?: "GTQ"
+
+            if (monedaSeleccionada != "USD") {
+                equivalente.text = "Equivalente: Q 0.00"
+            } else {
+                val valorMonto = monto.text.toString().toDoubleOrNull()
+                val valorCambio = tipoCambio.text.toString().toDoubleOrNull()
+
+                if (valorMonto == null || valorCambio == null ||
+                    !valorMonto.isFinite() || !valorCambio.isFinite() ||
+                    valorMonto <= 0.0 || valorCambio <= 0.0
+                ) {
+                    equivalente.text = "Ingresa un monto y tipo de cambio válidos"
+                } else {
+                    val total = valorMonto * valorCambio
+
+                    equivalente.text = if (total.isFinite()) {
+                        String.format(
+                            Locale.US,
+                            "Equivalente: Q %.2f",
+                            total
+                        )
+                    } else {
+                        "El equivalente es demasiado grande"
+                    }
+                }
+            }
+        }
+
+
+
+// Monedas disponibles para los ingresos
+        val monedas = listOf("GTQ", "USD")
+
+        selectorMoneda.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            monedas
+        )
+
+        selectorMoneda.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val moneda = monedas[position]
+
+                    contenedorTipoCambio.visibility =
+                        if (moneda == "USD") View.VISIBLE else View.GONE
+
+                    actualizarEquivalente()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    contenedorTipoCambio.visibility = View.GONE
+                }
+            }
+
+        monto.doAfterTextChanged {
+            actualizarEquivalente()
+        }
+
+        tipoCambio.doAfterTextChanged {
+            actualizarEquivalente()
+        }
 
         val formatoFecha = SimpleDateFormat(
             "yyyy-MM-dd",
@@ -98,6 +190,21 @@ class FormularioIngresoActivity : AppCompatActivity() {
                     monto.setText(ingreso.monto.toString())
                     fecha.setText(ingreso.fecha)
 
+                    selectorMoneda.setSelection(
+                        if (ingreso.moneda == "USD") 1 else 0
+                    )
+
+                    tipoCambio.setText(
+                        if (ingreso.moneda == "USD") {
+                            ingreso.tipoCambio.toString()
+                        } else {
+                            ""
+                        }
+                    )
+
+                    actualizarEquivalente()
+
+
                     guardar.isEnabled = true
                     eliminar.isEnabled = true
 
@@ -125,6 +232,15 @@ class FormularioIngresoActivity : AppCompatActivity() {
             val textoFecha =
                 fecha.text.toString().trim()
 
+            val monedaSeleccionada =
+                selectorMoneda.selectedItem?.toString() ?: "GTQ"
+
+            val valorTipoCambio = if (monedaSeleccionada == "USD") {
+                tipoCambio.text.toString().trim().toDoubleOrNull()
+            } else {
+                1.0
+            }
+
             if (textoDescripcion.isEmpty()) {
                 descripcion.error = "Ingresa una descripción"
                 return@setOnClickListener
@@ -136,6 +252,20 @@ class FormularioIngresoActivity : AppCompatActivity() {
                 valorMonto <= 0.0
             ) {
                 monto.error = "Ingresa un monto válido"
+                return@setOnClickListener
+            }
+
+            if (
+                valorTipoCambio == null ||
+                !valorTipoCambio.isFinite() ||
+                valorTipoCambio <= 0.0
+            ) {
+                tipoCambio.error = "Ingresa un tipo de cambio válido"
+                return@setOnClickListener
+            }
+
+            if (!(valorMonto * valorTipoCambio).isFinite()) {
+                monto.error = "El equivalente es demasiado grande"
                 return@setOnClickListener
             }
 
@@ -156,11 +286,14 @@ class FormularioIngresoActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
+
                     val ingreso = IngresoEntity(
                         id = if (modoEdicion) idIngreso else 0,
                         descripcion = textoDescripcion,
                         monto = valorMonto,
-                        fecha = textoFecha
+                        fecha = textoFecha,
+                        moneda = monedaSeleccionada,
+                        tipoCambio = valorTipoCambio
                     )
 
                     if (modoEdicion) {
