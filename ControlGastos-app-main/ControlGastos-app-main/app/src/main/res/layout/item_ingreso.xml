@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="12dp">
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="72dp"
+    android:paddingVertical="12dp">
 
+    <!-- Icono circular -->
+    <FrameLayout
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_icono_ingreso">
+
+        <ImageView
+            android:id="@+id/ivIconoIngreso"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@android:drawable/ic_input_add"
+            android:tint="#16834F"
+            android:contentDescription="Icono de ingreso" />
+
+    </FrameLayout>
+
+    <!-- Descripción y fecha -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_marginStart="12dp"
         android:orientation="vertical">
 
         <TextView
@@ -18,26 +38,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Salario"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textColor="#172820"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
         <TextView
             android:id="@+id/txtFechaIngreso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="2026-10-22"
-            android:textSize="14sp" />
+            android:textColor="#65756B"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:ellipsize="end" />
 
     </LinearLayout>
 
+    <!-- Monto -->
     <TextView
         android:id="@+id/txtMontoIngreso"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="Q 2500.00"
-        android:textColor="#2E7D32"
-        android:textSize="16sp"
+        android:textColor="#16834F"
+        android:textSize="15sp"
         android:textStyle="bold"
-        android:paddingStart="8dp" />
+        android:maxLines="1" />
+
+    <!-- Flecha para abrir el ingreso -->
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="6dp"
+        android:src="@android:drawable/ic_media_next"
+        android:tint="#A3ADA7"
+        android:contentDescription="Abrir ingreso" />
 
 </LinearLayout>

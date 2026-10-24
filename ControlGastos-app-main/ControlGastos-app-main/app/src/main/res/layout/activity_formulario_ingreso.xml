@@ -2,104 +2,178 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#F5F8F6">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
+        <!-- Encabezado -->
         <TextView
             android:id="@+id/txtTituloIngreso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             android:text="Registrar ingreso"
-            android:textSize="24sp"
+            android:textColor="#123B2B"
+            android:textSize="28sp"
             android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/etDescripcionIngreso"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="Descripción (salario, venta, depósito...)"
-            android:inputType="textCapSentences"
-            android:maxLines="1" />
-
-        <EditText
-            android:id="@+id/etMontoIngreso"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="Monto"
-            android:inputType="numberDecimal" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Moneda"
-            android:textStyle="bold" />
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="20dp"
+            android:text="Registra y organiza tus ingresos fácilmente"
+            android:textColor="#718079"
+            android:textSize="14sp" />
 
-        <Spinner
-            android:id="@+id/spMonedaIngreso"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp" />
-
+        <!-- Tarjeta blanca del formulario -->
         <LinearLayout
-            android:id="@+id/contenedorTipoCambioIngreso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_tarjeta_blanca"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:padding="20dp">
 
+            <!-- Descripción -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tipo de cambio (Q por US$1)"
+                android:text="Descripción"
+                android:textColor="#172820"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/etTipoCambioIngreso"
+                android:id="@+id/etDescripcionIngreso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ejemplo: 7.70"
-                android:inputType="numberDecimal" />
+                android:layout_marginTop="6dp"
+                android:hint="Salario, venta, depósito..."
+                android:inputType="textCapSentences"
+                android:singleLine="true"
+                android:textSize="16sp" />
 
+            <!-- Monto -->
             <TextView
-                android:id="@+id/tvEquivalenteIngreso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:text="Equivalente: Q 0.00"
+                android:layout_marginTop="20dp"
+                android:text="Monto"
+                android:textColor="#172820"
+                android:textSize="14sp"
                 android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etMontoIngreso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:hint="0.00"
+                android:inputType="numberDecimal"
+                android:textSize="20sp" />
+
+            <!-- Moneda -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Moneda"
+                android:textColor="#172820"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spMonedaIngreso"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp" />
+
+            <!-- Tipo de cambio: visible solo en USD -->
+            <LinearLayout
+                android:id="@+id/contenedorTipoCambioIngreso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#F0F8F3"
+                android:orientation="vertical"
+                android:padding="14dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo de cambio (Q por US$1)"
+                    android:textColor="#172820"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/etTipoCambioIngreso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:hint="Ejemplo: 7.70"
+                    android:inputType="numberDecimal"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tvEquivalenteIngreso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Equivalente: Q 0.00"
+                    android:textColor="#167A4A"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Fecha -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Fecha"
+                android:textColor="#172820"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etFechaIngreso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:hint="AAAA-MM-DD"
+                android:inputType="date"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/etFechaIngreso"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:hint="Fecha (AAAA-MM-DD)"
-            android:inputType="date" />
-
+        <!-- Botón guardar -->
         <Button
             android:id="@+id/btnGuardarIngreso"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar ingreso" />
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#167A4A"
+            android:text="Guardar ingreso"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
+        <!-- Botón eliminar: solo en edición -->
         <Button
             android:id="@+id/btnEliminarIngreso"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#FBE4E4"
             android:text="Eliminar ingreso"
+            android:textColor="#B42323"
+            android:textSize="16sp"
             android:visibility="gone" />
 
     </LinearLayout>

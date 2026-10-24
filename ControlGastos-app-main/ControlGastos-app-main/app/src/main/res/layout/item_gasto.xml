@@ -1,37 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Cuidado: la fila usa wrap_content de alto. Con match_parent cada gasto ocuparia toda la pantalla. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="72dp"
     android:paddingVertical="12dp">
 
+    <FrameLayout
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_icono_gasto">
+
+        <ImageView
+            android:id="@+id/ivIconoGasto"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@android:drawable/ic_menu_info_details"
+            android:tint="#D64B45"
+            android:contentDescription="Categoría del gasto" />
+
+    </FrameLayout>
+
+    <!-- Información del gasto -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_marginStart="12dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvDescripcion"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#172820"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
         <TextView
             android:id="@+id/tvDetalle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp" />
+            android:layout_marginTop="4dp"
+            android:textColor="#7B8981"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvMonto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:layout_marginStart="8dp"
+        android:textColor="#D64B45"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:maxLines="1" />
+
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="6dp"
+        android:src="@android:drawable/ic_media_next"        android:tint="#A3ADA7"
+        android:contentDescription="Abrir gasto" />
+
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="6dp"
+        android:src="@android:drawable/ic_media_next"
+        android:tint="#A3ADA7"
+        android:contentDescription="Abrir gasto" />
+
 </LinearLayout>
