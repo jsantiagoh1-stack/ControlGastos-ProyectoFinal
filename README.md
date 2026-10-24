@@ -210,3 +210,49 @@ El siguiente incremento estará orientado al manejo de quetzales y dólares esta
 Se implementará la conversión de monedas utilizando un tipo de cambio ingresado manualmente y se buscará conservar el valor aplicado a cada movimiento.
 
 Las próximas modificaciones deberán mantener la compatibilidad con la base de datos existente para evitar la pérdida de gastos e ingresos registrados.
+
+
+### Incremento 6: manejo de quetzales y dólares
+
+**Estado: implementado y probado en dispositivo Android.**
+
+Se incorporó el manejo de dos monedas:
+
+- Quetzales guatemaltecos (GTQ).
+- Dólares estadounidenses (USD).
+
+**Funcionalidades implementadas:**
+
+- Selección de moneda al registrar o editar gastos.
+- Selección de moneda al registrar o editar ingresos.
+- Introducción manual del tipo de cambio para movimientos en USD.
+- Cálculo automático del equivalente en quetzales.
+- Almacenamiento del monto original, moneda y tipo de cambio utilizado en cada movimiento.
+- Visualización de movimientos USD con su monto original y equivalente en GTQ.
+- Cálculo de ingresos, gastos y saldo disponible expresados en quetzales.
+- Conservación del tipo de cambio al cerrar y volver a abrir la aplicación.
+- Migración de Room de la versión 2 a la versión 3, conservando los movimientos anteriores.
+
+**Fórmula utilizada:**
+
+Equivalente en GTQ = Monto en USD × Tipo de cambio.
+
+**Pruebas realizadas:**
+
+Se verificaron el registro, edición, eliminación y persistencia de movimientos en USD desde un Samsung SM-A165M.
+
+Durante las pruebas se utilizaron tipos de cambio manuales de Q7.70 por dólar.
+
+Se comprobó que los movimientos anteriores se conservaron después de actualizar la base de datos.
+
+### Estado financiero al finalizar las pruebas
+
+| Concepto | Resultado |
+|---|---:|
+| Ingresos registrados | 3 |
+| Gastos registrados | 10 |
+| Total de ingresos | Q5,770.00 |
+| Total de gastos | Q1,405.00 |
+| Saldo disponible | Q4,365.00 |
+
+Los resultados incluyen un ingreso de prueba de US$100.00, equivalente a Q770.00.

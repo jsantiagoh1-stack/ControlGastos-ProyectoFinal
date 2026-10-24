@@ -376,3 +376,103 @@ Las siguientes etapas contemplan:
 4. Estadísticas financieras y mejoras visuales.
 
 La evolución de la base de datos deberá realizarse mediante migraciones para conservar los registros existentes.
+
+## Incremento 6: manejo de quetzales y dólares
+
+### 1. Objetivo
+
+Incorporar el registro y administración de gastos e ingresos en quetzales guatemaltecos (GTQ) y dólares estadounidenses (USD), utilizando un tipo de cambio manual y conservando el valor aplicado a cada movimiento.
+
+### 2. Modificaciones en la base de datos
+
+Se actualizaron las entidades `GastoEntity` e `IngresoEntity` para incorporar los siguientes atributos:
+
+- `moneda`: identifica si el movimiento está registrado en GTQ o USD.
+- `tipoCambio`: almacena el tipo de cambio utilizado.
+
+Los movimientos en quetzales utilizan `GTQ` y un tipo de cambio de `1.0`.
+
+Para los movimientos en dólares se guarda el monto original junto con el tipo de cambio ingresado por el usuario.
+
+### 3. Migración de Room
+
+La base de datos pasó de la versión 2 a la versión 3 mediante `MIGRATION_2_3`.
+
+Esta migración agrega los campos `moneda` y `tipoCambio` a las tablas `gastos` e `ingresos`.
+
+Se establecieron valores predeterminados para que los registros anteriores permanezcan almacenados como movimientos en GTQ.
+
+Las migraciones se registraron en `ControlGastosApp.kt`.
+
+### 4. Repositorios
+
+**GastoRepositoryRoom.kt**
+
+Se incorporaron funciones para:
+
+- Registrar gastos con su moneda y tipo de cambio.
+- Actualizar gastos conservando o modificando la información monetaria.
+- Consultar la moneda y el tipo de cambio de los movimientos.
+- Calcular el total de gastos expresado en quetzales.
+
+**IngresoRepositoryRoom.kt**
+
+Se utiliza directamente `IngresoEntity` para registrar y actualizar ingresos con moneda y tipo de cambio.
+
+El cálculo de ingresos se modificó para convertir a quetzales los movimientos registrados en USD.
+
+### 5. Formularios Android
+
+**FormularioGastoActivity.kt**
+
+Permite seleccionar GTQ o USD, ingresar manualmente un tipo de cambio cuando corresponde y mostrar el equivalente en quetzales.
+
+También conserva la moneda y el tipo de cambio al cargar un gasto existente para editarlo.
+
+**FormularioIngresoActivity.kt**
+
+Incorpora el selector de moneda, el cálculo automático del equivalente y el almacenamiento de la moneda y tipo de cambio elegidos.
+
+Al editar un ingreso existente, recupera los valores guardados.
+
+### 6. Historiales y pantalla principal
+
+**GastoAdapter.kt e IngresoAdapter.kt**
+
+Muestran cada movimiento con su moneda original.
+
+Cuando el movimiento está registrado en USD, también presentan su equivalente en quetzales.
+
+**MainActivity.kt**
+
+Presenta los totales de ingresos y gastos expresados en GTQ y calcula el saldo disponible utilizando cantidades convertidas a una misma moneda.
+
+### 7. Reglas de conversión
+
+Para los movimientos en GTQ:
+
+Equivalente en GTQ = Monto original.
+
+Para los movimientos en USD:
+
+Equivalente en GTQ = Monto original × Tipo de cambio.
+
+El saldo disponible se calcula mediante:
+
+Saldo disponible = Total de ingresos en GTQ − Total de gastos en GTQ.
+
+El tipo de cambio se conserva individualmente en cada movimiento, sin depender de un servicio externo.
+
+### 8. Pruebas y resultados
+
+Las pruebas se realizaron en un Samsung SM-A165M.
+
+Se verificaron el registro, edición, eliminación, conversión y persistencia de movimientos en USD.
+
+La actualización de Room conservó los registros existentes.
+
+Los resultados detallados se encuentran en `docs/pruebas-monedas-incremento6.md`.
+
+### 9. Próximas mejoras
+
+Después del Incremento 6, el desarrollo podrá continuar con estadísticas financieras por categoría, resúmenes de movimientos y mejoras en la experiencia de usuario.
