@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import umg.edu.gt.controlgastos.datos.AppDatabase
 import umg.edu.gt.controlgastos.datos.MIGRATION_1_2
+import umg.edu.gt.controlgastos.datos.MIGRATION_2_3
 
 class ControlGastosApp : Application() {
 
@@ -13,7 +14,7 @@ class ControlGastosApp : Application() {
             AppDatabase::class.java,
             "control_gastos.db"
         )
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
     }
 
