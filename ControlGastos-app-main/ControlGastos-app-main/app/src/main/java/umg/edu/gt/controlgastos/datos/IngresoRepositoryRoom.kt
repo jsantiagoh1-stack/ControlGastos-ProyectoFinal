@@ -32,6 +32,16 @@ class IngresoRepositoryRoom(
     }
 
     suspend fun totalIngresos(): Double {
-        return dao.obtenerTodos().sumOf { it.monto }
+
+        val ingresos = dao.obtenerTodos()
+
+        return ingresos.sumOf { ingreso ->
+
+            if (ingreso.moneda == "USD") {
+                ingreso.monto * ingreso.tipoCambio
+            } else {
+                ingreso.monto
+            }
+        }
     }
 }

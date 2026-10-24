@@ -9,16 +9,19 @@ object Dependencias {
     lateinit var control: ControlGastos
         private set
 
+    lateinit var gastos: GastoRepositoryRoom
+        private set
+
     lateinit var ingresos: IngresoRepositoryRoom
         private set
 
     fun inicializar(app: ControlGastosApp) {
 
-        val repositorioGastos = GastoRepositoryRoom(
+        gastos = GastoRepositoryRoom(
             app.database.gastoDao()
         )
 
-        control = ControlGastos(repositorioGastos)
+        control = ControlGastos(gastos)
 
         ingresos = IngresoRepositoryRoom(
             app.database.ingresoDao()
