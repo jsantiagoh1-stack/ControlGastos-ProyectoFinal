@@ -56,6 +56,15 @@ class MainActivity : AppCompatActivity() {
             )
             startActivity(intent)
         }
+
+        binding.btnEstadisticas.setOnClickListener {
+            val intent = Intent(
+                this,
+                EstadisticasActivity::class.java
+            )
+            startActivity(intent)
+        }
+
     }
 
     // IMPORTANTE: onResume se ejecuta al abrir la pantalla Y cada vez que regresamos del
@@ -92,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             "Gastos: Q %.2f".format(totalGastos)
 
         binding.tvSaldoDisponible.text =
-            "Saldo disponible: Q %.2f".format(saldo)
+            "Q %,.2f".format(java.util.Locale.US, saldo)
     }
 
 

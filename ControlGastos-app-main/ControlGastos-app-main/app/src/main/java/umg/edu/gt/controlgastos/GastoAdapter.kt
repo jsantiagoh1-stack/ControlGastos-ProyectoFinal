@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import edu.umg.programacion2.gastos.modelo.Gasto
 import edu.umg.programacion2.gastos.servicio.formatearQuetzales
 import umg.edu.gt.controlgastos.databinding.ItemGastoBinding
+import edu.umg.programacion2.gastos.modelo.Categoria
 
 /**
  * El "puente" entre la lista de datos (List<Gasto>) y las filas que se ven en pantalla.
@@ -39,7 +40,17 @@ class GastoAdapter(
     override fun onBindViewHolder(holder: GastoViewHolder, position: Int) {
         val gasto = gastos[position]
         holder.binding.tvDescripcion.text = gasto.descripcion
-        holder.binding.tvDetalle.text = "${gasto.categoria} · ${gasto.fecha}"
+        val icono = when (gasto.categoria) {
+            Categoria.ALIMENTACION -> R.drawable.ic_categoria_alimentacion
+            Categoria.TRANSPORTE -> R.drawable.ic_categoria_transporte
+            Categoria.ESTUDIOS -> R.drawable.ic_categoria_estudios
+            Categoria.ENTRETENIMIENTO -> R.drawable.ic_categoria_entretenimiento
+            Categoria.SALUD -> R.drawable.ic_categoria_salud
+            Categoria.OTROS -> R.drawable.ic_categoria_otros
+        }
+
+        holder.binding.ivIconoGasto.setImageResource(icono)
+
 
         val datosMoneda = monedasPorGasto[gasto.id]
         val moneda = datosMoneda?.first ?: "GTQ"

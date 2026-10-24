@@ -47,6 +47,14 @@ class IngresoAdapter(
 
             binding.txtDescripcionIngreso.text = ingreso.descripcion
 
+            val iconoIngreso = if (ingreso.moneda == "USD") {
+                R.drawable.ic_ingreso_usd
+            } else {
+                R.drawable.ic_ingreso_gtq
+            }
+
+            binding.ivIconoIngreso.setImageResource(iconoIngreso)
+
             if (ingreso.moneda == "USD") {
 
                 val equivalente = ingreso.monto * ingreso.tipoCambio
