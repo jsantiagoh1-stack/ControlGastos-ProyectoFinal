@@ -476,3 +476,99 @@ Los resultados detallados se encuentran en `docs/pruebas-monedas-incremento6.md`
 ### 9. Próximas mejoras
 
 Después del Incremento 6, el desarrollo podrá continuar con estadísticas financieras por categoría, resúmenes de movimientos y mejoras en la experiencia de usuario.
+
+
+## Incremento 7: rediseño de interfaz y estadísticas financieras
+
+### 1. Objetivo
+
+Mejorar la presentación visual de ControlGastos e incorporar estadísticas financieras que permitan conocer la distribución de los gastos por categoría.
+
+### 2. Nuevos componentes
+
+**GastoPorCategoria.kt**
+
+Clase de datos que almacena:
+
+- `categoria`: nombre de la categoría.
+- `total`: suma de los gastos de esa categoría expresada en quetzales.
+
+**EstadisticasActivity.kt**
+
+Actividad Android encargada de:
+
+- Consultar los gastos agrupados por categoría.
+- Mostrar el total general de gastos.
+- Presentar la cantidad de movimientos registrados.
+- Calcular el porcentaje correspondiente a cada categoría.
+- Generar barras horizontales con colores diferentes.
+- Mostrar un mensaje cuando no existen gastos.
+
+**activity_estadisticas.xml**
+
+Define la interfaz visual de estadísticas mediante tarjetas, textos y un contenedor dinámico para las barras de categorías.
+
+### 3. Modificaciones en Room
+
+**GastoDao.kt**
+
+Se incorporó la función `obtenerTotalesPorCategoria()`.
+
+Esta consulta utiliza `SUM`, `CASE WHEN`, `GROUP BY` y `ORDER BY` para agrupar los gastos por categoría, convertir los movimientos USD a GTQ y ordenar los resultados de mayor a menor importe.
+
+**GastoRepositoryRoom.kt**
+
+Se incorporó el método `obtenerGastosPorCategoria()`, que permite acceder a los resultados obtenidos por el DAO.
+
+No fue necesario modificar el esquema de la base de datos ni crear una nueva migración.
+
+### 4. Comunicación entre componentes
+
+El flujo de consulta de estadísticas es:
+
+1. El usuario presiona «Ver estadísticas» en `MainActivity`.
+2. Android abre `EstadisticasActivity`.
+3. La actividad llama a `Dependencias.gastos.obtenerGastosPorCategoria()`.
+4. `GastoRepositoryRoom` solicita los resultados a `GastoDao`.
+5. Room consulta SQLite y agrupa los gastos por categoría.
+6. La consulta devuelve una lista de objetos `GastoPorCategoria`.
+7. `EstadisticasActivity` calcula los porcentajes.
+8. La interfaz muestra los importes y las barras de colores.
+
+### 5. Rediseño de interfaz
+
+Se actualizaron los siguientes componentes:
+
+- `activity_main.xml`: tarjetas de saldo y resumen financiero, historiales y botón de estadísticas.
+- `activity_formulario_gasto.xml`: nuevo diseño del formulario de gastos.
+- `activity_formulario_ingreso.xml`: nuevo diseño del formulario de ingresos.
+- `item_gasto.xml`: presentación de gastos con iconos de categoría.
+- `item_ingreso.xml`: presentación de ingresos con iconos según moneda.
+- `GastoAdapter.kt`: selección de iconos para las categorías.
+- `IngresoAdapter.kt`: selección de iconos para ingresos GTQ y USD.
+
+También se incorporaron recursos XML de fondos, tarjetas e iconos.
+
+### 6. Decisiones técnicas
+
+**Consultas mediante Room**
+
+La agrupación de gastos se realiza directamente en SQLite para evitar recorrer todos los registros desde la interfaz.
+
+**Conversión monetaria**
+
+Los movimientos registrados en USD utilizan el tipo de cambio almacenado individualmente.
+
+**Separación de responsabilidades**
+
+El DAO consulta la base de datos, el repositorio proporciona los resultados y la actividad se encarga de presentarlos.
+
+**Componentes nativos**
+
+Las estadísticas utilizan `ProgressBar` horizontal y `TextView`, sin incorporar bibliotecas adicionales de gráficos.
+
+### 7. Resultado
+
+El Incremento 7 incorpora una nueva pantalla de estadísticas financieras y mejora la experiencia visual sin modificar las funcionalidades existentes ni el esquema de Room.
+
+La aplicación conserva el registro de ingresos y gastos, la conversión monetaria y el almacenamiento persistente.

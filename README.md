@@ -123,8 +123,7 @@ Proyecto final de Programación II, orientado a demostrar conocimientos de progr
 
 ## Estado actual del proyecto
 
-**Última actualización:** 22 de octubre de 2026.
-
+**Última actualización:** 23 de octubre de 2026.
 ControlGastos es una aplicación Android desarrollada en Kotlin como proyecto académico de Programación II de la Universidad Mariano Gálvez de Guatemala.
 
 Actualmente se han implementado la persistencia de gastos mediante Room y SQLite, así como la administración de ingresos y el cálculo del saldo disponible.
@@ -193,23 +192,26 @@ Se comprobó que, al cerrar y volver a abrir la aplicación, los ingresos y gast
 - Corrutinas de Kotlin.
 - Git y GitHub.
 
-### Funcionalidades pendientes
+### Funcionalidades implementadas
 
-Las siguientes mejoras forman parte de las próximas etapas de ControlGastos:
-
-1. Registro de movimientos en quetzales (GTQ) y dólares estadounidenses (USD).
-2. Conversión de monedas mediante un tipo de cambio manual.
-3. Conservación del tipo de cambio aplicado a cada movimiento.
-4. Estadísticas financieras y resúmenes por categoría.
-5. Mejoras en el diseño y la experiencia de usuario.
+- Registro, consulta, edición y eliminación de gastos.
+- Registro, consulta, edición y eliminación de ingresos.
+- Persistencia de movimientos mediante Room y SQLite.
+- Cálculo automático del saldo disponible.
+- Manejo de quetzales (GTQ) y dólares (USD).
+- Conversión mediante un tipo de cambio manual.
+- Conservación del tipo de cambio de cada movimiento.
+- Estadísticas de gastos agrupados por categoría.
+- Visualización de porcentajes mediante barras de colores.
+- Interfaz renovada con tarjetas, iconos y formularios mejorados.
 
 ### Próxima etapa de desarrollo
 
-El siguiente incremento estará orientado al manejo de quetzales y dólares estadounidenses.
+Después de completar los incrementos 6 y 7, ControlGastos cuenta con administración de ingresos y gastos, conversión de monedas, persistencia de datos y estadísticas financieras por categoría.
 
-Se implementará la conversión de monedas utilizando un tipo de cambio ingresado manualmente y se buscará conservar el valor aplicado a cada movimiento.
+Las próximas mejoras podrán enfocarse en nuevas funcionalidades de análisis financiero, validaciones adicionales y optimización de la experiencia de usuario.
 
-Las próximas modificaciones deberán mantener la compatibilidad con la base de datos existente para evitar la pérdida de gastos e ingresos registrados.
+Cualquier modificación de la base de datos deberá mantener la compatibilidad con los registros existentes para evitar la pérdida de información.
 
 
 ### Incremento 6: manejo de quetzales y dólares
@@ -256,3 +258,72 @@ Se comprobó que los movimientos anteriores se conservaron después de actualiza
 | Saldo disponible | Q4,365.00 |
 
 Los resultados incluyen un ingreso de prueba de US$100.00, equivalente a Q770.00.
+
+### Incremento 7: rediseño de interfaz y estadísticas financieras
+
+**Estado: implementado y probado en dispositivo Android.**
+
+El objetivo de este incremento fue mejorar la presentación visual de ControlGastos y permitir al usuario analizar sus gastos mediante estadísticas organizadas por categoría.
+
+**Mejoras de interfaz implementadas:**
+
+- Rediseño de la pantalla principal con tarjetas para el saldo disponible y el resumen financiero.
+- Presentación diferenciada de ingresos y gastos.
+- Incorporación de iconos para las categorías de gastos.
+- Incorporación de iconos para identificar ingresos en GTQ y USD.
+- Rediseño de los formularios de registro y edición de gastos e ingresos.
+- Incorporación del botón «Ver estadísticas».
+- Uso de colores, tarjetas redondeadas y una distribución visual más clara.
+
+**Estadísticas financieras implementadas:**
+
+- Nueva pantalla de estadísticas.
+- Consulta de gastos agrupados por categoría mediante Room.
+- Cálculo del total de gastos expresado en quetzales.
+- Visualización de la cantidad de gastos registrados.
+- Cálculo del porcentaje correspondiente a cada categoría.
+- Representación de los porcentajes mediante barras horizontales.
+- Asignación de colores diferentes según la categoría.
+- Actualización de las estadísticas a partir de los datos almacenados.
+
+**Decisiones técnicas:**
+
+Se utilizó una consulta SQL en `GastoDao` con `GROUP BY` y `SUM` para calcular los gastos acumulados por categoría.
+
+Los gastos registrados en dólares se convierten a quetzales mediante el tipo de cambio almacenado en cada movimiento.
+
+La clase `GastoPorCategoria` representa el nombre de una categoría y su total acumulado.
+
+La clase `EstadisticasActivity` obtiene los resultados mediante `GastoRepositoryRoom` y construye las barras utilizando componentes nativos de Android.
+
+Estas decisiones permiten mantener separadas las responsabilidades de persistencia, consulta de datos y presentación visual.
+
+**Pruebas realizadas:**
+
+Se compiló la aplicación mediante Gradle y se obtuvo el resultado `BUILD SUCCESSFUL`.
+
+Posteriormente, se verificó en el dispositivo Android:
+
+- La visualización de la pantalla principal rediseñada.
+- El acceso a la pantalla de estadísticas.
+- La carga de gastos almacenados en Room.
+- La presentación de los importes por categoría.
+- El cálculo de porcentajes.
+- La visualización de barras con colores diferentes.
+- La actualización de los resultados después de eliminar un movimiento de prueba.
+
+**Resultados finales verificados:**
+
+| Concepto | Resultado |
+|---|---:|
+| Gastos registrados | 10 |
+| Total de gastos | Q1,405.00 |
+| Visualización por categorías | Correcta |
+| Porcentajes y barras | Correctos |
+| Compilación Gradle | Exitosa |
+
+**Resultado del incremento:**
+
+ControlGastos dispone de una interfaz renovada y una pantalla de estadísticas funcional que permite identificar cómo se distribuyen los gastos personales entre las distintas categorías.
+
+La información presentada procede de la base de datos Room y respeta el tipo de cambio guardado para los movimientos en dólares.
