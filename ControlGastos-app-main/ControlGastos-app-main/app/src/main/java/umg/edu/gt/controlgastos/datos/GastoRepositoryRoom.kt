@@ -125,6 +125,10 @@ class GastoRepositoryRoom(
         return true
     }
 
+    suspend fun obtenerGastosPorCategoria(): List<GastoPorCategoria> {
+        return dao.obtenerTotalesPorCategoria()
+    }
+
     private fun Gasto.toEntity(): GastoEntity {
         return GastoEntity(
             id = id,

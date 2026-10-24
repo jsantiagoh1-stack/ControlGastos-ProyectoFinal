@@ -13,6 +13,22 @@ interface GastoDao {
     @Query("SELECT * FROM gastos ORDER BY fecha DESC")
     suspend fun obtenerTodos(): List<GastoEntity>
 
+    @Query("""
+    SELECT
+        categoria,
+        SUM(
+            CASE
+                WHEN moneda = 'USD'
+                THEN monto * tipoCambio
+                ELSE monto
+            END
+        ) AS total
+    FROM gastos
+    GROUP BY categoria
+    ORDER BY total DESC
+""")
+    suspend fun obtenerTotalesPorCategoria(): List<GastoPorCategoria>
+
     @Query("SELECT * FROM gastos WHERE id = :id")
     suspend fun obtenerPorId(id: Int): GastoEntity?
 
